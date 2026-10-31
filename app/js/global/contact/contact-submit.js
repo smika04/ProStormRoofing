@@ -1,134 +1,69 @@
-export function createSubmitController({
-    form,
-    config,
-    messageController,
-    contactFieldsController,
-    serviceDropdownController,
-    filesController,
-    turnstileController
-}) {
-    const submitButton = form.querySelector('.form__submit');
+export function createSubmitController({ form, config, messageController,
+                                           contactFieldsController, serviceDropdownController, filesController, turnstileController }) {
+    const button = form.querySelector('.form__submit');
+    const originalLabel = button?.textContent || '';
     let isSubmitting = false;
-
-    function setSubmitLoading(isLoading) {
-        if (!submitButton) return;
-
-        submitButton.disabled = isLoading;
-        submitButton.textContent = isLoading ? 'Sending...' : 'Request my free estimate';
-    }
-
-    async function verifyTurnstileToken(token) {
-        const response = await fetch(config.turnstileVerifyUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                token
-            })
-        });
-
-        let result = {};
-
-        try {
-            result = await response.json();
-        } catch {
-            result = {};
-        }
-
-        if (response.status === 429) {
-            return {
-                success: false,
-                limited: true,
-                message: result.message || config.rateLimitMessage
-            };
-        }
-
-        if (!response.ok) {
-            return {
-                success: false,
-                limited: false,
-                message: result.message || config.captchaFailedMessage
-            };
-        }
-
-        return {
-            success: result.success === true,
-            limited: result.limited === true,
-            message: result.message || ''
-        };
-    }
-
-    function finishSuccessfulSubmit() {
-        form.reset();
-        contactFieldsController.update();
-        serviceDropdownController.reset();
-        filesController.reset();
-        turnstileController.reset();
-
-        messageController.show(config.successMessage, false);
-    }
-
     function init() {
-        form.addEventListener('submit', async function (event) {
+        form.addEventListener('submit', async event => {
             event.preventDefault();
-
-            if (isSubmitting) {
+            if (isSubmitting) return;
+            if (!form.reportValidity() || !filesController.validate()) return;
+            const type = form.querySelector('[name="form_type"]')?.value;
+            if (!['estimate', 'careers'].includes(type)) {
+                messageController.show('Form type is missing or invalid.', true);
                 return;
             }
-
-            if (!form.checkValidity()) {
-                form.reportValidity();
+            if (type === 'careers' && !form.querySelector('[name="position"]')?.value.trim()) {
+                messageController.show('Please select a position.', true);
+                form.querySelector('[name="position"]')?.focus();
                 return;
             }
-
-            if (!serviceDropdownController.hasValue()) {
+            if (type === 'estimate' && !serviceDropdownController.hasValue()) {
                 serviceDropdownController.setOpen(true);
+                messageController.show('Please select a service.', true);
                 return;
             }
-
             if (!turnstileController.renderIfNeeded()) {
                 messageController.show(config.captchaLoadingMessage, true);
                 return;
             }
-
             const token = turnstileController.getToken();
-
             if (!token) {
                 messageController.show(config.captchaRequiredMessage, true);
                 return;
             }
-
             isSubmitting = true;
-            setSubmitLoading(true);
-
+            if (button) { button.disabled = true; button.textContent = 'Sending...'; }
             try {
-                const verification = await verifyTurnstileToken(token);
-
-                if (verification.limited) {
-                    turnstileController.reset();
-                    messageController.show(verification.message || config.rateLimitMessage, true);
+                const endpoint = config.submitUrl
+                    ? new URL(config.submitUrl, window.location.href)
+                    : new URL('/api/contact', new URL(config.turnstileVerifyUrl, window.location.href));
+                const data = new FormData(form);
+                data.set('form_type', type);
+                data.set('cf-turnstile-response', token);
+                // The file controller clears the native file input after selection.
+                data.delete('photos[]');
+                filesController.getFiles().forEach(file => data.append('photos[]', file, file.name));
+                // Do not set Content-Type: the browser supplies the multipart boundary.
+                const response = await fetch(endpoint, { method: 'POST', body: data });
+                const result = await response.json();
+                if (!response.ok || result.success !== true) {
+                    messageController.show(result.message || 'Unable to send your request. Please try again.', true);
                     return;
                 }
-
-                if (!verification.success) {
-                    turnstileController.reset();
-                    messageController.show(verification.message || config.captchaFailedMessage, true);
-                    return;
-                }
-
-                finishSuccessfulSubmit();
+                form.reset();
+                contactFieldsController.update();
+                serviceDropdownController.reset();
+                filesController.reset();
+                messageController.show(result.message || config.successMessage, false);
             } catch {
-                turnstileController.reset();
-                messageController.show(config.captchaUnavailableMessage, true);
+                messageController.show('Unable to confirm submission. Please contact us if the problem continues.', true);
             } finally {
+                turnstileController.reset();
                 isSubmitting = false;
-                setSubmitLoading(false);
+                if (button) { button.disabled = false; button.textContent = originalLabel; }
             }
         });
     }
-
-    return {
-        init
-    };
+    return { init };
 }

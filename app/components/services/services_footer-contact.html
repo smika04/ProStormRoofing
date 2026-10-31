@@ -46,7 +46,7 @@
         </div>
     </div>
 
-    <form class="form" id="estimateForm">
+    <form class="form" id="estimateForm" data-form-type="estimate">
         <label>
             <span>Your name</span>
             <input type="text" name="name" placeholder="John Smith" required>
@@ -123,7 +123,7 @@
                     </label>
 
                     <label class="form__choice">
-                        <input type="checkbox" name="callback_days[]" value="saturday">
+                        <input type="checkbox" name="callback_days[]" value="sunday">
                         <span>Sun</span>
                     </label>
                 </div>
@@ -191,6 +191,7 @@
         <div class="cf-turnstile"></div>
 
         <button class="btn form__submit" type="submit">Request my free estimate</button>
+        <input type="hidden" name="form_type" value="estimate">
 
         <p class="form__message" id="formMessage" hidden>
             Thank you! Your request has been received.

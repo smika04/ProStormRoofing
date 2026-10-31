@@ -10,8 +10,7 @@
   position: relative;
   z-index: 9999;
   display: block;
-  width: 100%;
-  min-width: 0;
+  width: fit-content;
   min-height: 78px;
   margin: 20px 0;
   overflow: visible;
@@ -48,25 +47,23 @@
 }
 
 
-@media (max-width: 480px) {
+@media (max-width: 760px) {
   .cf-turnstile {
-    width: 100%!important;
-    justify-content: center;
-    padding-right: 64px;
-    padding-left: 22px;
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    align-self: stretch;
   }
 }
 
 @media (max-width: 480px) {
-  .cf-turnstile {
-    display: flex;
-    min-height: 78px;
-    align-items: center;
-    justify-content: flex-start;
-    margin: 18px 0;
-  }
-
   .cf-turnstile iframe {
-    max-width: calc(100vw - 36px) !important;
+    display: block;
+    padding: 0 !important;
+    min-height: 65px;
+    overflow: visible;
   }
 }

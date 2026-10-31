@@ -3,10 +3,18 @@
 Cloudfare Turnstile
 
 Site_Public_Key in WebSite
-0x4AAAAAAFtcvnGHso2Ef6w8
+iofdsjiofsdajioasfdjiasjiosfdoi
 
 Secret_Key for backend/worker
-0x4AAAAAAFtcvt2zb-OJfqlnOtOLfdX0FNc
+fgajisfdgjappjafjpdfjpsadfjp
 
 ////////////////////////////////////////
 
+
+//////////////////////////////////////
+ESTIMATE_TO_EMAIL	Send email for estimate
+CAREERS_TO_EMAIL	Send email for careers
+MAIL_FROM	        Send email from website domain
+RESEND_API_KEY	    Resend API Key
+
+//////////////////////////////////////

@@ -1,84 +1,158 @@
 export function createTurnstileController(form, config, messageController) {
-    const turnstileContainer = form.querySelector('.cf-turnstile');
+    const container = form.querySelector('.cf-turnstile');
 
-    let turnstileWidgetId = null;
-    let turnstileToken = '';
-    let hasShownTurnstileReadyMessage = false;
+    let widgetId = null;
+    let token = '';
+    let hasShownReadyMessage = false;
+    let intervalId = null;
 
     function getTurnstile() {
-        if (!window || !window['turnstile']) {
-            return null;
+        return typeof window !== 'undefined'
+            ? window.turnstile || null
+            : null;
+    }
+
+    function clearToken() {
+        token = '';
+        hasShownReadyMessage = false;
+    }
+
+    function stopWaiting() {
+        if (intervalId !== null) {
+            clearInterval(intervalId);
+            intervalId = null;
+        }
+    }
+
+    function showUnavailable() {
+        messageController.show(
+            config.captchaUnavailableMessage ||
+            'Security check is unavailable. Please refresh and try again.',
+            true
+        );
+    }
+
+    function reset() {
+        const turnstile = getTurnstile();
+
+        clearToken();
+
+        if (
+            widgetId === null ||
+            typeof turnstile?.reset !== 'function'
+        ) {
+            return;
         }
 
-        return window['turnstile'];
+        try {
+            turnstile.reset(widgetId);
+        } catch {
+            showUnavailable();
+        }
     }
 
     function renderIfNeeded() {
         const turnstile = getTurnstile();
 
-        if (!turnstileContainer) {
+        if (!container || typeof turnstile?.render !== 'function') {
             return false;
         }
 
-        if (!turnstile || typeof turnstile['render'] !== 'function') {
-            return false;
-        }
-
-        if (turnstileWidgetId !== null) {
+        if (widgetId !== null) {
             return true;
         }
 
-        turnstileContainer.innerHTML = '';
-        turnstileToken = '';
-        hasShownTurnstileReadyMessage = false;
+        if (!config.turnstileSiteKey) {
+            stopWaiting();
+            showUnavailable();
+            return false;
+        }
 
-        turnstileWidgetId = turnstile['render'](turnstileContainer, {
-            sitekey: config.turnstileSiteKey,
-            theme: 'light',
-            size: 'normal',
-            appearance: 'always',
-            execution: 'render',
-            retry: 'auto',
-            'retry-interval': 8000,
-            callback: function (token) {
-                turnstileToken = token;
+        clearToken();
 
-                if (!hasShownTurnstileReadyMessage) {
-                    hasShownTurnstileReadyMessage = true;
-                    messageController.show('Human check completed. You can send the form now.', false, true);
+        try {
+            const renderedId = turnstile.render(container, {
+                sitekey: config.turnstileSiteKey,
+                theme: 'light',
+                size: 'flexible',
+                appearance: 'always',
+                execution: 'render',
+                retry: 'auto',
+                'retry-interval': 8000,
+
+                callback: function (responseToken) {
+                    token = responseToken || '';
+
+                    if (token && !hasShownReadyMessage) {
+                        hasShownReadyMessage = true;
+
+                        messageController.show(
+                            'Human check completed. You can send the form now.',
+                            false,
+                            true
+                        );
+                    }
+                },
+
+                'expired-callback': function () {
+                    reset();
+                },
+
+                'timeout-callback': function () {
+                    clearToken();
+                },
+
+                'error-callback': function () {
+                    clearToken();
+                    showUnavailable();
+
+                    return true;
+                },
+
+                'unsupported-callback': function () {
+                    clearToken();
+                    showUnavailable();
                 }
-            },
-            'expired-callback': function () {
-                turnstileToken = '';
-                hasShownTurnstileReadyMessage = false;
-            },
-            'error-callback': function () {
-                turnstileToken = '';
-                hasShownTurnstileReadyMessage = false;
-                messageController.show(config.captchaUnavailableMessage, true);
-            },
-            'unsupported-callback': function () {
-                turnstileToken = '';
-                hasShownTurnstileReadyMessage = false;
-                messageController.show(config.captchaUnavailableMessage, true);
-            }
-        });
+            });
 
-        return true;
+            if (renderedId === undefined || renderedId === null) {
+                return false;
+            }
+
+            widgetId = renderedId;
+            stopWaiting();
+
+            return true;
+        } catch {
+            stopWaiting();
+            showUnavailable();
+
+            return false;
+        }
     }
 
     function init() {
-        if (renderIfNeeded()) {
+        if (!container || intervalId !== null || widgetId !== null) {
+            return;
+        }
+
+        if (renderIfNeeded() || !config.turnstileSiteKey) {
             return;
         }
 
         let attempts = 0;
 
-        const intervalId = setInterval(function () {
+        intervalId = setInterval(function () {
             attempts += 1;
 
-            if (renderIfNeeded() || attempts >= 80) {
-                clearInterval(intervalId);
+            if (renderIfNeeded()) {
+                stopWaiting();
+                return;
+            }
+
+            if (attempts >= 80) {
+                stopWaiting();
+                showUnavailable();
             }
         }, 100);
     }
@@ -86,33 +160,21 @@ export function createTurnstileController(form, config, messageController) {
     function getToken() {
         const turnstile = getTurnstile();
 
-        if (turnstileToken) {
-            return turnstileToken;
-        }
-
         if (
-            !turnstile ||
-            turnstileWidgetId === null ||
-            typeof turnstile['getResponse'] !== 'function'
+            widgetId === null ||
+            typeof turnstile?.getResponse !== 'function'
         ) {
             return '';
         }
 
-        return turnstile['getResponse'](turnstileWidgetId);
-    }
+        try {
+            token = turnstile.getResponse(widgetId) || '';
+            return token;
+        } catch {
+            clearToken();
+            showUnavailable();
 
-    function reset() {
-        const turnstile = getTurnstile();
-
-        turnstileToken = '';
-        hasShownTurnstileReadyMessage = false;
-
-        if (
-            turnstile &&
-            turnstileWidgetId !== null &&
-            typeof turnstile['reset'] === 'function'
-        ) {
-            turnstile['reset'](turnstileWidgetId);
+            return '';
         }
     }
 

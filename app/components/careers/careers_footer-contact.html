@@ -46,7 +46,7 @@
         </div>
     </div>
 
-    <form class="form" id="estimateForm">
+    <form class="form" id="estimateForm" data-form-type="careers">
         <label>
             <span>Your name</span>
             <input type="text" name="name" placeholder="John Smith" required>
@@ -123,7 +123,7 @@
                     </label>
 
                     <label class="form__choice">
-                        <input type="checkbox" name="callback_days[]" value="saturday">
+                        <input type="checkbox" name="callback_days[]" value="sunday">
                         <span>Sun</span>
                     </label>
                 </div>
@@ -152,21 +152,23 @@
         </div>
 
         <div class="service-field">
-            <span>How can we help?</span>
+            <span>Position you are applying for</span>
 
-            <div class="service-dropdown" data-service-dropdown>
-                <button class="service-dropdown__button" type="button" aria-expanded="false">
-                    <span data-service-dropdown-text>Select a service</span>
+            <div class="service-dropdown" data-career-dropdown>
+                <button
+                        class="service-dropdown__button"
+                        type="button"
+                        aria-expanded="false"
+                >
+                    <span data-career-position-text>Select a position</span>
                 </button>
 
-                <div class="service-dropdown__options">
-                    <button type="button" data-value="roof-replacement">Roof replacement</button>
-                    <button type="button" data-value="roof-repair">Roof repair</button>
-                    <button type="button" data-value="inspection-maintenance">Inspection & maintenance</button>
-                    <button type="button" data-value="custom">Custom</button>
-                </div>
+                <div
+                        class="service-dropdown__options"
+                        data-career-position-options
+                ></div>
 
-                <input type="hidden" name="service" data-service-dropdown-input required>
+                <input type="hidden" name="position">
             </div>
         </div>
 
@@ -191,7 +193,7 @@
         <div class="cf-turnstile"></div>
 
         <button class="btn form__submit" type="submit">Apply Now</button>
-
+        <input type="hidden" name="form_type" value="careers">
         <p class="form__message" id="formMessage" hidden>
             Thank you! Your request has been received.
         </p>

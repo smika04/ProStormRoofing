@@ -5,6 +5,52 @@ export function initCareersJobs() {
 
     if (!list) return;
 
+    const dropdown = document.querySelector('[data-career-dropdown]');
+    const positionInput = dropdown?.querySelector('[name="position"]');
+    const positionText = dropdown?.querySelector('[data-career-position-text]');
+    const positionOptions = dropdown?.querySelector('[data-career-position-options]');
+    const positionButton = dropdown?.querySelector('.service-dropdown__button');
+    function setPositionOpen(open) {
+        dropdown?.classList.toggle('is-open', open);
+        positionButton?.setAttribute('aria-expanded', String(open));
+    }
+    positionButton?.addEventListener('click', () => {
+        setPositionOpen(positionButton.getAttribute('aria-expanded') !== 'true');
+    });
+    document.addEventListener('click', event => {
+        if (dropdown && !dropdown.contains(event.target)) setPositionOpen(false);
+    });
+    dropdown?.addEventListener('keydown', event => {
+        if (event.key === 'Escape') { setPositionOpen(false); positionButton?.focus(); }
+    });
+    dropdown?.closest('form')?.addEventListener('reset', () => {
+        if (positionInput) positionInput.value = '';
+        if (positionText) positionText.textContent = 'Select a position';
+        setPositionOpen(false);
+    });
+    function populatePositions(items, failed = false) {
+        if (!positionInput || !positionText || !positionOptions) return;
+        positionInput.value = '';
+        positionOptions.replaceChildren();
+        positionText.textContent = failed ? 'Unable to load positions' : 'Select a position';
+        const titles = [...new Set(items.map(item => String(item.Title || item.Position || '').trim()).filter(Boolean))];
+        if (!failed && !titles.includes('General application')) titles.push('General application');
+        titles.forEach(title => {
+            const option = document.createElement('button');
+            option.type = 'button';
+            option.textContent = title;
+            option.dataset.value = title;
+            option.addEventListener('click', () => {
+                positionInput.value = title;
+                positionText.textContent = title;
+                positionInput.dispatchEvent(new Event('change', { bubbles: true }));
+                setPositionOpen(false);
+                positionButton?.focus();
+            });
+            positionOptions.append(option);
+        });
+    }
+
     const jobsUrl = list.dataset.jobsUrl || '../json/jobs.json';
 
     function createListItems(items) {
@@ -115,7 +161,9 @@ export function initCareersJobs() {
             return response.json();
         })
         .then(function (items) {
-            if (!Array.isArray(items) || items.length === 0) {
+            if (!Array.isArray(items)) throw new Error('Invalid jobs response');
+            populatePositions(items);
+            if (items.length === 0) {
                 if (count) count.textContent = '0 open roles';
                 if (empty) empty.hidden = false;
                 return;
@@ -130,6 +178,7 @@ export function initCareersJobs() {
             bindJobEvents();
         })
         .catch(function () {
+            populatePositions([], true);
             if (count) count.textContent = 'Unable to load roles';
             if (empty) {
                 empty.hidden = false;
