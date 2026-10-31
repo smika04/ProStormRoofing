@@ -48,7 +48,7 @@
     <form class="form" id="estimateForm" data-form-type="estimate">
         <label>
             <span>Your name</span>
-            <input type="text" name="name" placeholder="John Smith" required>
+            <input type="text" name="name" placeholder="John Smith" autocomplete="name" required>
         </label>
 
         <fieldset class="form__choice-group">
@@ -75,14 +75,14 @@
         <div class="form__conditional-field" data-contact-field="phone">
             <label>
                 <span>Phone number</span>
-                <input type="tel" name="phone" placeholder="(604) 000-0000">
+                <input type="tel" name="phone" placeholder="(604) 000-0000" autocomplete="tel">
             </label>
         </div>
 
         <div class="form__conditional-field" data-contact-field="email">
             <label>
                 <span>Email address</span>
-                <input type="email" name="email" placeholder="john@example.com">
+                <input type="email" name="email" placeholder="john@example.com" autocomplete="email">
             </label>
         </div>
 
