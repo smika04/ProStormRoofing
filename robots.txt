@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://blue-hat-0f19.dev-smika04.workers.dev/sitemap.xml
