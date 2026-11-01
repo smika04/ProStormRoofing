@@ -123,7 +123,7 @@ A separate subdomain also uses `/` when the website is at its root.
 #### Subdirectory deployment
 
 ```bash
-npm run build -- --baseHref=/ProStromRoofing/
+npm run build -- --baseHref=/ProStormRoofing/
 ```
 
 This expects a public URL such as:
@@ -684,7 +684,7 @@ https://USERNAME.github.io/ProStromRoofing/
 the workflow build must use the matching base path:
 
 ```bash
-npm run build -- --baseHref=/ProStromRoofing/
+npm run build -- --baseHref=/ProStormRoofing/
 ```
 
 Use the repository's exact name and capitalization. For deployment at the root of a user site or custom domain, build with `/`.
@@ -846,13 +846,13 @@ https://blue-hat-0f19.dev-smika04.workers.dev/
 #### Подпапка
 
 ```bash
-npm run build -- --baseHref=/ProStromRoofing/
+npm run build -- --baseHref=/ProStormRoofing/
 ```
 
 Пример публичного адреса:
 
 ```text
-https://example.com/ProStromRoofing/
+https://example.com/ProStormRoofing/
 ```
 
 Другой пример:
@@ -1403,7 +1403,7 @@ https://USERNAME.github.io/ProStromRoofing/
 команда сборки workflow должна использовать:
 
 ```bash
-npm run build -- --baseHref=/ProStromRoofing/
+npm run build -- --baseHref=/ProStormRoofing/
 ```
 
 Название и регистр подпапки должны совпадать с репозиторием.

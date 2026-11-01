@@ -33,7 +33,7 @@
           run: npm ci
 
         - name: Build website
-          run: npm run build -- --baseHref=/ProStromRoofing/
+          run: npm run build -- --baseHref=/ProStormRoofing/
 
         - name: Verify build output
           run: |

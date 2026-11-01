@@ -1,7 +1,7 @@
 const fileinclude = require('gulp-file-include');
 
 // Start with domain
-// npm run build -- --baseHref=/ProStromRoofing/
+// npm run build -- --baseHref=/ProStormRoofing/
 
 let gulp = require('gulp'),
     esbuild = require('gulp-esbuild'),
