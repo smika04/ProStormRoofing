@@ -1,10 +1,9 @@
-<svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 654.93498 658.44563"
-        width="654.93498"
-        height="658.44563"
->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 654.93498 658.44563" width="654.93498" height="658.44563">
+
+  <rect x="5" y="8" width="634.93498" height="638.44563" fill="#f7f7f5"/>
+
   <g transform="translate(221.72077,-85.890151)">
+
     <path
             fill="#de222c"
             d="
