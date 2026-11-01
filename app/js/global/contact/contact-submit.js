@@ -23,18 +23,11 @@ export function createSubmitController({ form, config, messageController,
                 messageController.show('Please select a service.', true);
                 return;
             }
-            if (!turnstileController.renderIfNeeded()) {
-                messageController.show(config.captchaLoadingMessage, true);
-                return;
-            }
-            const token = turnstileController.getToken();
-            if (!token) {
-                messageController.show(config.captchaRequiredMessage, true);
-                return;
-            }
             isSubmitting = true;
             if (button) { button.disabled = true; button.textContent = 'Sending...'; }
             try {
+                const token = await turnstileController.executeAndGetToken();
+                if (!token) return;
                 const endpoint = config.submitUrl
                     ? new URL(config.submitUrl, window.location.href)
                     : new URL('/api/contact', new URL(config.turnstileVerifyUrl, window.location.href));

@@ -1,187 +1,117 @@
 export function createTurnstileController(form, config, messageController) {
     const container = form.querySelector('.cf-turnstile');
-
     let widgetId = null;
     let token = '';
-    let hasShownReadyMessage = false;
-    let intervalId = null;
+    let pending = null;
+    let initialized = false;
 
     function getTurnstile() {
-        return typeof window !== 'undefined'
-            ? window.turnstile || null
-            : null;
+        return typeof window !== 'undefined' ? window.turnstile : null;
     }
 
-    function clearToken() {
-        token = '';
-        hasShownReadyMessage = false;
+    function settle(value) {
+        token = value || '';
+        if (!pending) return;
+        const current = pending;
+        pending = null;
+        clearTimeout(current.timer);
+        current.resolve(token);
     }
 
-    function stopWaiting() {
-        if (intervalId !== null) {
-            clearInterval(intervalId);
-            intervalId = null;
-        }
-    }
-
-    function showUnavailable() {
-        messageController.show(
-            config.captchaUnavailableMessage ||
-            'Security check is unavailable. Please refresh and try again.',
-            true
-        );
-    }
-
-    function reset() {
-        const turnstile = getTurnstile();
-
-        clearToken();
-
-        if (
-            widgetId === null ||
-            typeof turnstile?.reset !== 'function'
-        ) {
-            return;
-        }
-
-        try {
-            turnstile.reset(widgetId);
-        } catch {
-            showUnavailable();
-        }
-    }
-
-    function renderIfNeeded() {
-        const turnstile = getTurnstile();
-
-        if (!container || typeof turnstile?.render !== 'function') {
-            return false;
-        }
-
-        if (widgetId !== null) {
-            return true;
-        }
-
-        if (!config.turnstileSiteKey) {
-            stopWaiting();
-            showUnavailable();
-            return false;
-        }
-
-        clearToken();
-
-        try {
-            const renderedId = turnstile.render(container, {
-                sitekey: config.turnstileSiteKey,
-                theme: 'light',
-                size: 'flexible',
-                appearance: 'always',
-                execution: 'render',
-                retry: 'auto',
-                'retry-interval': 8000,
-
-                callback: function (responseToken) {
-                    token = responseToken || '';
-
-                    if (token && !hasShownReadyMessage) {
-                        hasShownReadyMessage = true;
-
-                        messageController.show(
-                            'Human check completed. You can send the form now.',
-                            false,
-                            true
-                        );
-                    }
-                },
-
-                'expired-callback': function () {
-                    reset();
-                },
-
-                'timeout-callback': function () {
-                    clearToken();
-                },
-
-                'error-callback': function () {
-                    clearToken();
-                    showUnavailable();
-
-                    return true;
-                },
-
-                'unsupported-callback': function () {
-                    clearToken();
-                    showUnavailable();
-                }
-            });
-
-            if (renderedId === undefined || renderedId === null) {
-                return false;
-            }
-
-            widgetId = renderedId;
-            stopWaiting();
-
-            return true;
-        } catch {
-            stopWaiting();
-            showUnavailable();
-
-            return false;
-        }
+    function unavailable() {
+        settle('');
+        messageController.show(config.captchaUnavailableMessage ||
+            'Security check is unavailable. Please try again.', true);
     }
 
     function init() {
-        if (!container || intervalId !== null || widgetId !== null) {
-            return;
+        if (initialized) return;
+        initialized = true;
+        // No widget rendering, challenge, or token generation on page load.
+        if (container) container.hidden = true;
+    }
+
+    function renderIfNeeded() {
+        const api = getTurnstile();
+        if (!container || !config.turnstileSiteKey || typeof api?.render !== 'function') return false;
+        if (widgetId !== null) return true;
+        try {
+            const id = api.render(container, {
+                sitekey: config.turnstileSiteKey,
+                theme: 'light',
+                size: 'flexible',
+                execution: 'execute',
+                appearance: 'execute',
+                retry: 'never',
+                'refresh-expired': 'manual',
+                'refresh-timeout': 'manual',
+                callback: response => settle(response),
+                'expired-callback': () => settle(''),
+                'timeout-callback': unavailable,
+                'unsupported-callback': unavailable,
+                'error-callback': () => {
+                    unavailable();
+                    return true;
+                }
+            });
+            if (id === undefined || id === null) return false;
+            widgetId = id;
+            return true;
+        } catch {
+            return false;
         }
+    }
 
-        if (renderIfNeeded() || !config.turnstileSiteKey) {
-            return;
+    async function waitForApi() {
+        const started = Date.now();
+        while (typeof getTurnstile()?.render !== 'function') {
+            if (Date.now() - started >= 8000) return false;
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
+        return true;
+    }
 
-        let attempts = 0;
-
-        intervalId = setInterval(function () {
-            attempts += 1;
-
-            if (renderIfNeeded()) {
-                stopWaiting();
-                return;
+    async function executeAndGetToken() {
+        if (pending) return '';
+        if (!container || !(await waitForApi())) {
+            unavailable();
+            return '';
+        }
+        container.hidden = false;
+        if (!renderIfNeeded()) {
+            unavailable();
+            return '';
+        }
+        return new Promise(resolve => {
+            const timer = setTimeout(() => {
+                unavailable();
+                reset();
+            }, 120000);
+            pending = { resolve, timer };
+            try {
+                const api = getTurnstile();
+                token = '';
+                api.reset(widgetId);
+                api.execute(widgetId);
+            } catch {
+                unavailable();
             }
-
-            if (attempts >= 80) {
-                stopWaiting();
-                showUnavailable();
-            }
-        }, 100);
+        });
     }
 
     function getToken() {
-        const turnstile = getTurnstile();
-
-        if (
-            widgetId === null ||
-            typeof turnstile?.getResponse !== 'function'
-        ) {
-            return '';
-        }
-
-        try {
-            token = turnstile.getResponse(widgetId) || '';
-            return token;
-        } catch {
-            clearToken();
-            showUnavailable();
-
-            return '';
-        }
+        return token;
     }
 
-    return {
-        init,
-        renderIfNeeded,
-        getToken,
-        reset
-    };
+    function reset() {
+        settle('');
+        try {
+            if (widgetId !== null) getTurnstile()?.reset(widgetId);
+        } catch {
+            // A later submission will report any initialization failure.
+        }
+        if (container) container.hidden = true;
+    }
+
+    return { init, renderIfNeeded, executeAndGetToken, getToken, reset };
 }
