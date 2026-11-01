@@ -21,7 +21,7 @@ const ALLOWED_ORIGINS = [
 ];
 
 const RATE_LIMIT_CONFIG = {
-    maxSubmissions: 10,
+    maxSubmissions: 5,
     windowSeconds: 60 * 60,
     keyPrefix: "form-submit"
 };
