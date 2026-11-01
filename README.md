@@ -535,6 +535,8 @@ Add custom-domain hostnames when used.
 
 The public Site Key belongs in the existing frontend configuration:
 
+Fiile script : .app\js\global\contact\contact-config.js
+
 ```javascript
 export const CONTACT_FORM_CONFIG = {
     submitUrl: 'https://form-check.dev-smika04.workers.dev/api/contact',
@@ -1251,6 +1253,8 @@ blue-hat-0f19.dev-smika04.workers.dev
 Добавьте hostnames собственного домена, когда он используется.
 
 В существующем frontend-конфиге:
+
+Fiile script : .app\js\global\contact\contact-config.js
 
 ```javascript
 export const CONTACT_FORM_CONFIG = {
