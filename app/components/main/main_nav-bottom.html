@@ -1,45 +1,5 @@
 <footer class="footer" id="contact">
-    <div class="footer__brand">
-        <div class="footer__meta">
-            <a class="logo logo--light" href="@@baseHref">
-                <img class="svg-inject" src="images/logo/LogoFull-white.svg" loading="lazy" width="535" height="89" alt="Storm Pro Roofing">
-            </a>
-
-            <p style="margin-top: 0px; margin-bottom: 20px">Premium roofing. Built to endure.</p>
-
-            <span>Serving Chilliwack & the Fraser Valley</span>
-
-            <ul class="footer__addresses" data-company-addresses></ul>
-
-            <ul class="social-links">Socials media:
-                <li>
-                    <a href="https://www.facebook.com/stormproroofing.ca" target="_blank" rel="noopener noreferrer">
-                        <img class="svg-inject" src="images/icons/facebook-com.svg" loading="lazy" alt="Facebook">
-                    </a>
-                </li>
-
-                <li>
-                    <a href="https://www.instagram.com/stormproroofing.ca" target="_blank" rel="noopener noreferrer">
-                        <img class="svg-inject" style="scale: 1.3" src="images/icons/instagram-com.svg" loading="lazy" alt="Instagram">
-                    </a>
-                </li>
-            </ul>
-
-            <div class="footer__contact_directly">
-                <span>Contact directly</span>
-
-                <ul class="footer__contact_directly_ul" data-company-phones></ul>
-                <ul class="footer__contact_directly_ul" data-company-emails></ul>
-                <ul class="footer__contact_directly_ul" data-company-faxes></ul>
-            </div>
-
-            <ul class="footer__hours">Office Hours
-                <li>Monday - Friday: 8am - 6pm</li>
-                <li>Saturday: 8am - 1pm</li>
-                <li>Sunday: Closed</li>
-            </ul>
-        </div>
-    </div>
+    @@include('components/global/global_contact-info.html')
 
     <nav class="footer__links" aria-label="Footer navigation">
         <a class="active_page" href="@@baseHref">Home</a>
@@ -53,12 +13,6 @@
     </nav>
 
     <div class="footer__map" aria-label="Storm Pro Roofing office location map">
-        <iframe
-                title="Storm Pro Roofing office location"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2612.1754433542837!2d-121.99370169999999!3d49.102307399999994!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x52eb00928aad4ca7%3A0x6f7748ea411ca1a2!2sStorm%20Pro%20Roofing!5e0!3m2!1sru!2sca!4v1793079030194!5m2!1sru!2sca"
-                loading="lazy"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen>
-        </iframe>
+        @@include('components/global/global_map-office_iframe.html')
     </div>
 </footer>
