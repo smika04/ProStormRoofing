@@ -270,6 +270,14 @@ gulp.task('fonts', function () {
         .pipe(browserSync.reload({ stream: true }));
 });
 
+gulp.task('documents', function () {
+    return gulp.src('app/documents/**/*.*', {
+        allowEmpty: true
+    })
+        .pipe(gulp.dest('.tmp/documents'))
+        .pipe(browserSync.reload({ stream: true }));
+});
+
 // 🌐 BROWSER SYNC
 gulp.task('browser-sync', function () {
     browserSync.init({
@@ -327,6 +335,12 @@ gulp.task('watch', function () {
         gulp.series('fonts')
     );
 
+    gulp.watch(
+        'app/documents/**/*.*',
+        { usePolling: true },
+        gulp.series('documents')
+    );
+
     console.log('👀 Watching app files...');
     console.log('🔗 baseHref:', baseHref);
 });
@@ -379,6 +393,14 @@ gulp.task('export-fonts', function () {
         .pipe(gulp.dest('dist/fonts'));
 });
 
+// 🚀 EXPORT DOCUMENTS
+gulp.task('export-documents', function () {
+    return gulp.src('app/documents/**/*.*', {
+        allowEmpty: true
+    })
+        .pipe(gulp.dest('dist/documents'));
+});
+
 // 🚀 EXPORT ALL
 gulp.task('export', gulp.parallel(
     'export-html',
@@ -386,7 +408,8 @@ gulp.task('export', gulp.parallel(
     'export-js',
     'export-images',
     'export-json',
-    'export-fonts'
+    'export-fonts',
+    'export-documents'
 ));
 
 // 🏗 BUILD
@@ -398,7 +421,8 @@ gulp.task('build', gulp.series(
         'js',
         'images',
         'json',
-        'fonts'
+        'fonts',
+        'documents'
     ),
     'export'
 ));
@@ -411,7 +435,8 @@ gulp.task('default', gulp.series(
         'js',
         'images',
         'json',
-        'fonts'
+        'fonts',
+        'documents'
     ),
     gulp.parallel(
         'browser-sync',
