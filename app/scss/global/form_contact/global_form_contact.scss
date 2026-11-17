@@ -655,9 +655,13 @@
     transition: color 0.2s ease,
     text-decoration-color 0.2s ease;
 
-    &:hover {
-      color: #b91c1c;
-      text-decoration-color: #b91c1c;
+    text-wrap: nowrap;
+
+    @media (hover: hover) and (pointer: fine){
+      &:hover {
+        color: #b91c1c;
+        text-decoration-color: #b91c1c;
+      }
     }
 
     &:focus-visible {
