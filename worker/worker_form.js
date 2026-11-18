@@ -21,8 +21,8 @@ const ALLOWED_ORIGINS = [
 ];
 
 const RATE_LIMIT_CONFIG = {
-    maxSubmissions: 5,
-    windowSeconds: 60 * 60,
+    maxSubmissions: 3,
+    windowSeconds: 60 * 60 * 3,
     keyPrefix: "form-submit"
 };
 
@@ -152,7 +152,7 @@ async function submitContact(request, env) {
     const mail = {
         from: env.MAIL_FROM,
         to: [recipient],
-        subject: type === 'careers' ? 'New career application — Storm Pro Roofing' : 'New estimate request — Storm Pro Roofing',
+        subject: `${type === 'careers' ? 'New career application' : 'New estimate request'} — ${name.replace(/[\r\n]+/g, ' ')}`,
         text: [`Form: ${type}`, `Name: ${name}`, `Contact method: ${method}`, `Phone: ${phone}`,
             `Email: ${email}`, (type === 'careers' ? `Position: ${position}` : `Service: ${service}`), `Callback days: ${days.join(', ')}`,
             `Callback time: ${time}`, '', message].join('\n'),

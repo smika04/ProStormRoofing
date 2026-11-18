@@ -597,13 +597,13 @@ The prepared configuration:
 
 ```javascript
 const RATE_LIMIT_CONFIG = {
-    maxSubmissions: 10,
+    maxSubmissions: 3,
     windowSeconds: 60 * 60,
     keyPrefix: 'form-submit'
 };
 ```
 
-The limit is shared by both form types and is based on IP address.
+The limit is 3 submissions per hour per IP address, shared by both form types.
 
 The prepared implementation counts attempts after successful CAPTCHA and before the email request. A Resend failure may consume an attempt.
 
@@ -1316,13 +1316,13 @@ FORM_RATE_LIMIT
 
 ```javascript
 const RATE_LIMIT_CONFIG = {
-    maxSubmissions: 10,
+    maxSubmissions: 3,
     windowSeconds: 60 * 60,
     keyPrefix: 'form-submit'
 };
 ```
 
-Лимит по IP общий для обеих форм.
+Лимит — 3 заявки в час с одного IP, общий для обеих форм.
 
 В подготовленной реализации счётчик увеличивается после успешной CAPTCHA и до почтового запроса. Ошибка Resend может израсходовать попытку.
 

@@ -232,7 +232,10 @@
   color: var(--accent);
   font-size: 15px;
   line-height: 1;
-  transform: translateY(-50%);
+  transform: translate3d(0, -50%, 0) rotate(0deg);
+  transform-origin: center;
+  backface-visibility: hidden;
+  will-change: transform;
   transition:
           background 0.35s ease,
           color 0.35s ease,
@@ -258,7 +261,7 @@
   .btn-look_more_reviews:hover::after {
     background: var(--ink);
     color: var(--white);
-    transform: translateY(-50%) rotate(-45deg);
+    transform: translate3d(0, -50%, 0) rotate(-45deg);
   }
 }
 

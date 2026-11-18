@@ -33,8 +33,12 @@
   }
 
   .contact-next {
-    gap: 26px;
+    gap: 30px;
     padding: 30px 24px;
+  }
+
+  .contact-next__list {
+    gap: 28px;
   }
 
   .contact-next__item {
@@ -42,11 +46,13 @@
     gap: 12px;
   }
 
-  .contact-next__item h3 {
+  .contact-next__item h3,
+  .contact-next__note h3 {
     font-size: 13px;
   }
 
-  .contact-next__item p {
+  .contact-next__item p,
+  .contact-next__note p {
     font-size: 12px;
   }
 
@@ -127,12 +133,12 @@
   }
 
   .contact-next {
-    gap: 24px;
+    gap: 28px;
     padding: 28px 20px;
   }
 
   .contact-next__list {
-    gap: 22px;
+    gap: 26px;
   }
 
   .contact-next__call a {

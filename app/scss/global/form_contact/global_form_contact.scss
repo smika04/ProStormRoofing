@@ -22,7 +22,7 @@
   display: grid;
   flex: 1 1 auto;
   align-content: start;
-  gap: 28px;
+  gap: 36px;
   width: 100%;
   min-width: 0;
   padding: clamp(28px, 4vw, 42px);
@@ -41,7 +41,7 @@
 
 .contact-next__list {
   display: grid;
-  gap: 24px;
+  gap: 32px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -61,7 +61,8 @@
   letter-spacing: 0.08em;
 }
 
-.contact-next__item h3 {
+.contact-next__item h3,
+.contact-next__note h3 {
   margin: 0 0 8px;
   color: var(--white);
   font-size: 14px;
@@ -69,24 +70,39 @@
   line-height: 1.35;
 }
 
-.contact-next__item p {
+.contact-next__item p,
+.contact-next__note p {
   margin: 0;
   color: #858985;
   font-size: 13px;
   line-height: 1.7;
 }
 
+.contact-next__note {
+  min-width: 0;
+  padding: 20px 0 20px 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: 2px solid var(--accent);
+}
+
 .contact-next__call {
   display: grid;
   gap: 8px;
   padding-top: 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .contact-next__call span {
   color: #858985;
   font-size: 12px;
   font-style: italic;
+}
+
+.contact-next__call .thanks_careers {
+  color: var(--white)!important;
+  font-size: clamp(22px, 2.4vw, 28px)!important;
+  font-weight: 800!important;
+  line-height: 1.2!important;
 }
 
 .contact-next__call a {

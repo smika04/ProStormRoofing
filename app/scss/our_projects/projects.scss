@@ -166,6 +166,10 @@
   background: var(--white);
   color: var(--accent);
   font-style: normal;
+  transform: translate3d(0, 0, 0) rotate(0deg);
+  transform-origin: center;
+  backface-visibility: hidden;
+  will-change: transform;
   transition:
           background 0.28s ease,
           border-color 0.28s ease,
@@ -223,7 +227,10 @@
   color: var(--accent);
   font-size: 15px;
   line-height: 1;
-  transform: translateY(-50%);
+  transform: translate3d(0, -50%, 0) rotate(0deg);
+  transform-origin: center;
+  backface-visibility: hidden;
+  will-change: transform;
   transition:
           background 0.28s ease,
           color 0.28s ease,
@@ -322,7 +329,10 @@ body.project-detail-open.project-view-visible.project-back-ready .project-detail
   color: var(--accent);
   font-size: 15px;
   line-height: 1;
-  transform: translateY(-50%);
+  transform: translate3d(0, -50%, 0) rotate(0deg);
+  transform-origin: center;
+  backface-visibility: hidden;
+  will-change: transform;
   transition:
           background 0.32s ease,
           color 0.32s ease,
@@ -734,7 +744,7 @@ body.project-detail-open.project-view-visible.project-back-ready .project-detail
     border-color: var(--accent);
     background: var(--accent);
     color: var(--white);
-    transform: rotate(-45deg);
+    transform: translate3d(0, 0, 0) rotate(-45deg);
   }
 
   .projects-load-more:hover {
@@ -751,7 +761,7 @@ body.project-detail-open.project-view-visible.project-back-ready .project-detail
   .projects-load-more:hover::after {
     background: var(--accent);
     color: var(--white);
-    transform: translateY(-50%) rotate(-45deg);
+    transform: translate3d(0, -50%, 0) rotate(-45deg);
   }
 
   .project-detail__back:hover {
@@ -773,7 +783,7 @@ body.project-detail-open.project-view-visible.project-back-ready .project-detail
   .project-detail__back:hover::after {
     background: var(--accent);
     color: var(--white);
-    transform: translateY(-50%) rotate(45deg);
+    transform: translate3d(0, -50%, 0) rotate(45deg);
   }
 
   .project-detail__gallery-item:hover img {
